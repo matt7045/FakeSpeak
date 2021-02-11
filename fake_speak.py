@@ -49,12 +49,10 @@ with open('credentials.config', 'r') as f:
     token = credentials["discord_token"]
 
 #Run the client
-while True:
-    try:
-        client.run(token)
-    except KeyboardInterrupt:
-        break
-    except Exception as e:
-        print(e)
-        sleep(5)
+try:
+    client.run(token)
+except Exception as e:
+    print(e)
+sleep(5)
+
 
