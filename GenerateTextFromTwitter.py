@@ -41,26 +41,19 @@ def getUserTweets(screen_name, number_of_tweets):
     request = requests.get(url, params=params, headers = headers)
     return(request.json()['globalObjects']['tweets'])
 
-#Filters out annoying URL artifacts and stuff
-def filterRobot(string):
-    old_string_list = string.split()
-    new_string_list = []
-    for string in old_string_list:
-        if ("/" not in string) and ('=' not in string) and (string != ' '):
-            new_string_list.append(string)
-    return(' '.join(new_string_list))
-
 #Get dem tweets
 tweets = getUserTweets('DalaiLama',2000)
 #Chop dem tweets
 tweet_texts = []
 for tweet_id, tweet_data in tweets.items():
-    tweet_texts.append(tweet_data['full_text'])
+    tweet_text = tweet_data['full_text']
+    #Only add tweet if it's not a hyperlink
+    if ("/" not in tweet_text) and ('=' not in tweet_text):
+        tweet_texts.append(tweet_text)
 long_string = ' '.join( tweet_texts )
 #Filter dem tweets
 filtered_string="".join([character for character in long_string if ord(character) < 128])
-double_filtered_string = filterRobot(filtered_string)
 #Save dem tweets
 with open('text_dumps/dalai_lama.txt', 'w+') as f:
-    f.write(double_filtered_string)
+    f.write(filtered_string)
 
