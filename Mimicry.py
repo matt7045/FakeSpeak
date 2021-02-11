@@ -5,9 +5,8 @@ from math import ceil
 
 #Splits a file into a long list of words
 def splitFile( file_name : str ):
-    print("Opening text file...")
     #Save the text in a buffer
-    with open(fileName,'r') as f:
+    with open(file_name,'r') as f:
         text=f.read()
     #Get all length n word groups, and count how often
     # they occur in our text. Let's assume that punctionation
@@ -93,7 +92,7 @@ def generateSentences(number_of_sentences : int, group_distribution : dict):
             sentences_constructed += 0.5
     
     #Once we have enough sentences, piece them together into one long string
-    output_string = ' '.join([' '.join(group[:overlap]) for group in group_list])
+    output_string = ' '.join([' '.join(group[:(overlap-(length_of_group%2))]) for group in group_list])
     #Remove the whitespace that gets "tacked on" to the front of the punctuation...
     punctuation = ['?','!',',','.','-']
     for symbol in punctuation:
@@ -109,16 +108,16 @@ def generateSentences(number_of_sentences : int, group_distribution : dict):
 
 #Mimics the pattern of writing present in file_name_to_mimic
 def mimic(file_name_to_mimic, number_of_sentences_to_produce, group_length = 6):
-    word_list  = splitFile(file_name_to_mimic)
-    group_list = groupWords(word_list, group_length)
-    output     = generateSentences(number_of_sentences_to_produce, group_list)
-    return(output)
+    attempts = 0
+    while attempts < 10:
+        try:
+            word_list  = splitFile(file_name_to_mimic)
+            group_list = groupWords(word_list, group_length)
+            output     = generateSentences(number_of_sentences_to_produce, group_list)
+            return(output)
+        except Exception as e:
+            print(e)
+            attempts += 1
+    return('Think for yourself!')
 
-
-
-fileName = "text_dumps/debate.txt"
-groupLength = 4
-numberOfSentences = 10
-
-y=mimic(fileName, numberOfSentences, groupLength)
-print(y)
+    
