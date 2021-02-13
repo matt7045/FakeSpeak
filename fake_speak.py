@@ -1,5 +1,6 @@
 import discord
-import Mimicry
+from Mimicry import Mimicry
+from twitterScraper import twitterScraper
 import random
 from time import sleep
 import json
@@ -14,14 +15,26 @@ import json
 #
 #Enjoy. With great power, comes great responsibility
 
+#Get the configuration from the config file
+with open("credentials.config", 'r') as f:
+    configuration = json.load(f)
+twitter_user  = configuration['twitter_user']
+discord_token = configuration['discord_token']
 
 #First, generate a global client we can use to talk to discord
 client = discord.Client()
-
 #Lets the console know we've successfully logged in
 @client.event
 async def on_ready():
     print('We have logged in as {0.user}'.format(client))
+    print('Fetching Tweets from '+twitter_user+'...')
+    tweet_texts = twitterScraper.getTweetsAsString(twitter_user)
+    print('Fetched Tweets. Saving to file.')
+    with open('text_dumps/'+twitter_user+'.txt', 'w') as f:
+        f.write(tweet_texts)
+    print('Saved Tweets to file. Running application...')
+    
+    
 
 #When we receive a message...
 @client.event
@@ -39,18 +52,15 @@ async def on_message(message):
             chaos = int((random.randint(3,6) + random.randint(3, 6))/2)
         #Generate a wisdom
         length = random.randint(1,4)
-        wisdom = Mimicry.mimic('text_dumps/dalai_lama.txt',length, chaos)
+        wisdom = Mimicry.mimic('text_dumps/'+twitter_user+'.txt',length, chaos)
         #Sent that insult to the discord channel
         await message.channel.send('Child, here is my wisdom for you... '+wisdom)
+        print('Sent messags...\n'+wisdom+'\n\n')
 
-#Get our token from the config file
-with open('credentials.config', 'r') as f:
-    credentials = json.load(f)
-    token = credentials["discord_token"]
 
 #Run the client
 try:
-    client.run(token)
+    client.run(discord_token)
 except Exception as e:
     print(e)
 sleep(5)

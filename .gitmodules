@@ -1,0 +1,6 @@
+[submodule "twitterScraper"]
+	path = twitterScraper
+	url = https://github.com/matt7045/twitterScraper.git
+[submodule "Mimicry"]
+	path = Mimicry
+	url = https://github.com/matt7045/Mimicry.git
